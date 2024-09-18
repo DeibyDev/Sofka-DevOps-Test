@@ -10,30 +10,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Chequear el código desde el repositorio
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # 2. Configurar AWS con tus credenciales
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1  # Cambia esto si usas otra región
+          aws-region: us-east-1
 
-      # 3. Iniciar sesión en Amazon ECR
+      # Iniciar sesión en Amazon ECR sin usar TTY
       - name: Log in to Amazon ECR
         run: |
-          $(aws ecr get-login-password --region us-east-1) | docker login --username AWS --password-stdin 045695356548.dkr.ecr.us-east-1.amazonaws.com
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 045695356548.dkr.ecr.us-east-1.amazonaws.com
 
-      # 4. Construir la imagen Docker
+      # Construir la imagen Docker
       - name: Build Docker image
         run: |
           docker build -t mi-aplicacion .
           docker tag mi-aplicacion:latest 045695356548.dkr.ecr.us-east-1.amazonaws.com/mi-aplicacion:latest
 
-      # 5. Subir la imagen Docker a ECR
+      # Subir la imagen a ECR
       - name: Push Docker image to Amazon ECR
         run: |
           docker push 045695356548.dkr.ecr.us-east-1.amazonaws.com/mi-aplicacion:latest
