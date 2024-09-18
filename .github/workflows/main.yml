@@ -34,4 +34,4 @@ jobs:
       # Subir la imagen a ECR
       - name: Push Docker image to Amazon ECR
         run: |
-          docker push 045695356548.dkr.ecr.us-east-1.amazonaws.com/mi-aplicacion:latest
+          docker push 045695356548.dkr.ecr.us-east-1.amazonaws.com/mi-devops:latest
