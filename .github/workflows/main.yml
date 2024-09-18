@@ -1,20 +1,20 @@
-name: CI/CD Pipeline
+name: Test AWS Connection
 
 on:
   push:
     branches:
-      - main
+      - main  # Se ejecutará cuando hagas push a la rama "main"
 
 jobs:
-  build:
+  test-aws:
     runs-on: ubuntu-latest
-    
+
     steps:
-      # Chequear el código
+      # 1. Chequear el código del repositorio (es requerido por Actions)
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Configurar AWS CLI con credenciales
+      # 2. Configurar AWS con tus credenciales
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -22,27 +22,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # Configurar Docker
-      - name: Log in to Amazon ECR
+      # 3. Comando simple para verificar que la autenticación funciona
+      - name: Verify AWS authentication
         run: |
-          $(aws ecr get-login-password --region us-east-1) | docker login --username AWS --password-stdin <your-account-id>.dkr.ecr.us-east-1.amazonaws.com
-
-      # Construir la imagen de Docker
-      - name: Build Docker image
-        run: |
-          docker build -t <your-app-name> .
-          docker tag <your-app-name>:latest <your-account-id>.dkr.ecr.us-east-1.amazonaws.com/<your-app-name>:latest
-
-      # Subir la imagen a ECR
-      - name: Push Docker image to Amazon ECR
-        run: |
-          docker push <your-account-id>.dkr.ecr.us-east-1.amazonaws.com/<your-app-name>:latest
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Deploy to AWS ECS
-        run: |
-          aws ecs update-service --cluster <your-cluster-name> --service <your-service-name> --force-new-deployment
+          aws sts get-caller-identity
