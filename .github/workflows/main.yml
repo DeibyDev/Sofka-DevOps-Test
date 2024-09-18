@@ -1,0 +1,48 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Chequear el código
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Configurar AWS CLI con credenciales
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      # Configurar Docker
+      - name: Log in to Amazon ECR
+        run: |
+          $(aws ecr get-login-password --region us-east-1) | docker login --username AWS --password-stdin <your-account-id>.dkr.ecr.us-east-1.amazonaws.com
+
+      # Construir la imagen de Docker
+      - name: Build Docker image
+        run: |
+          docker build -t <your-app-name> .
+          docker tag <your-app-name>:latest <your-account-id>.dkr.ecr.us-east-1.amazonaws.com/<your-app-name>:latest
+
+      # Subir la imagen a ECR
+      - name: Push Docker image to Amazon ECR
+        run: |
+          docker push <your-account-id>.dkr.ecr.us-east-1.amazonaws.com/<your-app-name>:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to AWS ECS
+        run: |
+          aws ecs update-service --cluster <your-cluster-name> --service <your-service-name> --force-new-deployment
