@@ -1,16 +1,16 @@
-name: Test AWS Connection
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - main  # Se ejecutará cuando hagas push a la rama "main"
+      - main  # Se ejecutará en cada push a la rama "main"
 
 jobs:
-  test-aws:
+  build-and-push-docker:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Chequear el código del repositorio (es requerido por Actions)
+      # 1. Chequear el código desde el repositorio
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -20,9 +20,20 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: us-east-1  # Cambia esto si usas otra región
 
-      # 3. Comando simple para verificar que la autenticación funciona
-      - name: Verify AWS authentication
+      # 3. Iniciar sesión en Amazon ECR
+      - name: Log in to Amazon ECR
         run: |
-          aws sts get-caller-identity
+          $(aws ecr get-login-password --region us-east-1) | docker login --username AWS --password-stdin 045695356548.dkr.ecr.us-east-1.amazonaws.com
+
+      # 4. Construir la imagen Docker
+      - name: Build Docker image
+        run: |
+          docker build -t mi-aplicacion .
+          docker tag mi-aplicacion:latest 045695356548.dkr.ecr.us-east-1.amazonaws.com/mi-aplicacion:latest
+
+      # 5. Subir la imagen Docker a ECR
+      - name: Push Docker image to Amazon ECR
+        run: |
+          docker push 045695356548.dkr.ecr.us-east-1.amazonaws.com/mi-aplicacion:latest
