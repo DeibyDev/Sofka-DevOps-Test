@@ -29,7 +29,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t alpine_timeoff .
-          docker tag mi-aplicacion:latest 045695356548.dkr.ecr.us-east-1.amazonaws.com/devops:latest
+          docker tag alpine_timeoff:latest 045695356548.dkr.ecr.us-east-1.amazonaws.com/devops:latest
 
       # Subir la imagen a ECR
       - name: Push Docker image to Amazon ECR
