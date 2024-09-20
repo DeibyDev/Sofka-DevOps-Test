@@ -28,10 +28,10 @@ jobs:
       # Construir la imagen Docker
       - name: Build Docker image
         run: |
-          docker build -t mi-aplicacion .
-          docker tag mi-aplicacion:latest 045695356548.dkr.ecr.us-east-1.amazonaws.com/mi-aplicacion:latest
+          docker build -t alpine_timeoff .
+          docker tag mi-aplicacion:latest 045695356548.dkr.ecr.us-east-1.amazonaws.com/devops:latest
 
       # Subir la imagen a ECR
       - name: Push Docker image to Amazon ECR
         run: |
-          docker push 045695356548.dkr.ecr.us-east-1.amazonaws.com/mi-devops:latest
+          docker push 045695356548.dkr.ecr.us-east-1.amazonaws.com/devops:latest
