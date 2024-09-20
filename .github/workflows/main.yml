@@ -38,4 +38,4 @@ jobs:
           
       - name: Deploy to Amazon ECS
         run: |
-          aws ecs update-service --cluster alpine_timeoff --service devops --force-new-deployment   
+          aws ecs update-service --cluster alpine_timeoff --service devops_v2 --force-new-deployment   
