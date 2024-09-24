@@ -1,18 +1,49 @@
-FROM node:14
+# Usar la imagen base de Node.js versión 14 en Alpine
+FROM node:14-alpine AS dependencies
 
-# Crear y establecer el directorio de trabajo
-WORKDIR /usr/src/app
+# Establecer el directorio de trabajo
+WORKDIR /app
 
-# Copiar el package.json y el package-lock.json al contenedor
-COPY package*.json ./
+# Instalar dependencias necesarias
+RUN apk add --no-cache \
+    make \
+    g++ \
+    python3
 
-# Instalar las dependencias de la aplicación
+# Establecer la variable de entorno para Python
+ENV PYTHON=python3
+
+# Copiar el archivo package.json e instalar dependencias
+COPY package.json .
 RUN npm install
 
-# Copiar el resto del código fuente al contenedor
-COPY . .
+# Crear la imagen final usando Node.js 14
+FROM node:14-alpine
 
-# Exponer el puerto en el que la aplicación escucha (ajustar si es necesario)
+LABEL org.label-schema.schema-version="1.0"
+LABEL org.label-schema.docker.cmd="docker run -d -p 3000:3000 --name alpine_timeoff"
+
+# Instalar otras herramientas necesarias (opcional)
+RUN apk add --no-cache vim make g++ python3
+
+# Crear usuario 'app' y establecer directorio de trabajo
+RUN adduser --system app --home /app
+USER app
+WORKDIR /app
+
+# Cambiar de nuevo a root para copiar y establecer permisos
+USER root
+# Copiar el archivo de base de datos al directorio de trabajo
+COPY --chown=app:app db.development.sqlite /app/db.development.sqlite
+
+# Cambiar permisos del archivo de base de datos
+RUN chmod 664 /app/db.development.sqlite
+
+# Copiar los archivos del proyecto y las dependencias instaladas
+COPY . /app
+COPY --from=dependencies /app/node_modules ./node_modules
+
+# Exponer el puerto 3000
 EXPOSE 3000
 
 # Comando para iniciar la aplicación
