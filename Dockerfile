@@ -33,11 +33,10 @@ WORKDIR /app
 
 # Cambiar de nuevo a root para copiar y establecer permisos
 USER root
-# Copiar el archivo de base de datos al directorio de trabajo
-COPY --chown=app:app db.development.sqlite /app/db.development.sqlite
+
 
 # Cambiar permisos del archivo de base de datos
-RUN chmod 664 /app/db.development.sqlite
+RUN chmod 664 /app/.*
 
 # Copiar los archivos del proyecto y las dependencias instaladas
 COPY . /app
