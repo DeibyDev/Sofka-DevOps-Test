@@ -79,4 +79,4 @@ jobs:
 
     - name: Push Docker image to ECR (with Terraform output)
       run: |
-        docker push ${{ steps.ecr_output.outputs.ecr_url }}:latest
+         docker push ${{ steps.ecr_output.outputs.image_url }}
