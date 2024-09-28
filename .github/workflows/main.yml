@@ -24,7 +24,9 @@ jobs:
     - name: Terraform Init
       run: |
         terraform init
+        terraform validate
         terraform plan
+        terraform apply
       working-directory: ./terraform
      
     - name: Obtener salida de Terraform
