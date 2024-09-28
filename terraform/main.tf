@@ -117,7 +117,7 @@ resource "aws_ecs_task_definition" "app_task_definition" {
 }
 
 # Crear un servicio ECS con Docker
-resource "aws_ecs_service" "app_service" {
+resource "aws_ecs_service" "app_service_v2" {
   name            = "app-service"
   cluster         = aws_ecs_cluster.main.id
   desired_count   = 1
