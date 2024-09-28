@@ -99,7 +99,7 @@ resource "aws_lb_listener" "app_listener" {
 # Crear una definición de tarea para la aplicación Docker
 resource "aws_ecs_task_definition" "app_task_definition" {
   family                   = "app-task"
-  execution_role_arn      = aws_iam_role.ecs_execution_role.arn  # Asegúrate de declarar esta variable
+  execution_role_arn      = aws_iam_role.ecs_execution_role.arn  
   network_mode            = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                     = var.cpu
@@ -107,7 +107,7 @@ resource "aws_ecs_task_definition" "app_task_definition" {
   
   container_definitions     = jsonencode([{
     name      = "app-container"
-    image     = "${aws_ecr_repository.app.repository_url}:latest"
+    image     = "045695356548.dkr.ecr.us-east-1.amazonaws.com/my-app:latest"
     essential = true
     portMappings = [{
       containerPort = 3000
